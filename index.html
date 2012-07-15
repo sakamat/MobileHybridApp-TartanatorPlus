@@ -1,56 +1,89 @@
-<!DOCTYPE html> 
-<html> 
-<head>
-	<meta charset="UTF-8" />
-	<title>The Tartanator Plus</title> 
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>The Tartanator Plus</title>
 
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta content="width=device-width, initial-scale=1" name="viewport">
 
-    <!-- CLUE #1: This should be offline -->
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.0rc1/jquery.mobile-1.0rc1.min.css" />
-    <script src="http://code.jquery.com/jquery-1.6.4.min.js"></script>
-    <script src="http://code.jquery.com/mobile/1.0rc1/jquery.mobile-1.0rc1.min.js"></script>
+        <!-- CLUE #1: This should be offline -->
+        <link href="css/jquery.mobile-1.1.0.min.css" rel="stylesheet" />
+        <script src="js/jquery.js"></script>
+        <script src="js/jquery.mobile-1.1.0.min.js"></script>
 
-    <link href="tartans/tartans.css" />
-</head> 
-<body> 
+        <link href="tartans/tartans.css" />
+    </head>
+    <body>
 
-    <div data-role="page" id="homePage">
+        <div id="homePage" data-role="page">
 
-        <div data-role="header" data-position="fixed">
-            <h1>The Tartanator Plus</h1>
-        </div>
-        <div data-role="header" data-theme="b" class="forrit" id="tagLine">Bring forrit the tartan!</div>
-
-        <div data-role="content">
-            <p>The Tartanator is a community-built association of groups, businesses and individuals bent on keeping the Scottish heritage alive overseas by promoting the understanding and enjoyment of <strong>tartans</strong>.</p>
-        </div>
-
-        <div data-role="footer" data-position="fixed">
-            <div data-role="navbar">
-            <ul>
-                <li><a href="index.html" data-icon="info" class="ui-btn-active ui-state-persist">About</a></li>
-                <li><a href="findevent.html" data-icon="start">Events</a></li>
-                <li><a href="tartans.html" data-icon="grid">Tartans</a></li>
-                <!-- CLUE #2B: some link might be changed after we DRY tartans.html -->
-            </ul>
+            <div data-position="fixed" data-role="header">
+                <h1>The Tartanator Plus</h1>
             </div>
+            <div id="tagLine" class="forrit" data-role="header" data-theme="b">Bring forrit the tartan!</div>
+
+            <div data-role="content">
+                <p>The Tartanator is a community-built association of groups, businesses and individuals bent on keeping the Scottish heritage alive overseas by promoting the understanding and enjoyment of <strong>tartans</strong>.</p>
+            </div>
+
+            <div data-position="fixed" data-role="footer">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a class="ui-btn-active ui-state-persist" data-icon="info" href="index.html">About</a></li>
+                        <li><a data-icon="start" href="findevent.html">Events</a></li>
+                        <li><a data-icon="grid" href="#tartansPage">Tartans</a></li>
+                        <!-- CLUE #2B: some link might be changed after we DRY tartans.html -->
+                    </ul>
+                </div>
+            </div>
+
         </div>
+        <div id="tartansPage" data-role="page">
+            <div data-position="fixed" data-role="header">
+                <a data-icon="back" href="index.html" rel="prev">Back</a>
+                <h1>Popular Tartans</h1>
+            </div><!-- /header -->
+            <div data-role="content">
+                <ul id="tartansList" data-role="listview">
 
-    </div>
+                </ul>
+            </div><!-- /content -->
+            <div data-position="fixed" data-role="footer">
+                <div data-role="navbar">
+                    <ul>
+                        <li><a data-icon="info" href="index.html">About</a></li>
+                        <li><a data-icon="start" href="findevent.html">Events</a></li>
+                        <li><a class="ui-btn-active" data-icon="grid" href="#tartansPage">Tartans</a></li>
+                    </ul>
+                </div>
+            </div>
 
-    <!-- CLUE #2A: Something should be here for DRY
-    <div data-role="page" id="tartansPage">
-    </div> 
-    -->
+        </div><!-- /page -->
+        <script>
+            $('#homePage').bind('pagebeforecreate', function() {
+                $('#tagLine').html('Hello Tartaniam');
+            });
 
+            $('#tartansPage').bind('pagebeforeshow', function() {
+                $.get("tartans.json", {}, function(res, code) {
+                    var s;
+                    for(var i = 0; i < res.length; i++) {
+                        var tartanName = res[i].name;
+                        var li = '<li><a href="showtartan.html?name=' + tartanName + '"><img src="tartans/icons/' + tartanName + '.png" alt="' + tartanName + '" /></a><li>';
+                        s += li;
+                    }
+                    $('#tartansList').html(s);
+                    $('#tartansList').listview('refresh');
+                }, "json");
+            });
+            $('#showtartanPage').live('pagebeforeshow', function() {
+                var page = $(this);
+                var tartanName = page.data('url').split('=')[1];
+                page.css('background-image', "url('tartans/icons/" + tartanName + ".png')").page();
+                $('#tartanName', page).html(tartanName);
 
-    <!-- CLUE #4: Binding here is a good deal
-    <script> 
-        // do some binding here
-    </script>
-    -->
+            })
+        </script>
 
-
-</body>
+    </body>
 </html>
